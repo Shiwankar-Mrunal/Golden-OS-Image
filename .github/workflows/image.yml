@@ -6,17 +6,10 @@ on:
   pull_request:
 
 env:
-  PACKER_VERSION: "1.9.2"
-  IMAGE_VERSION: "1.2.${{ github.run_number }}"
-  CLOUD_PROVIDER: "azure"
-  OS_NAME: "ubuntu-22.04"
-  AZURE_LOCATION: "eastus"
-  ANSIBLE_FORCE_COLOR: "true"
   AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   AZURE_SECRET: ${{ secrets.AZURE_SECRET }}
   AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
   AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 jobs:
 
   #################################
@@ -43,8 +36,15 @@ jobs:
         run: packer init ubuntu-packer-test/
 
       - name: Packer Validate
+        env:
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         run: |
-          packer validate ubuntu-packer-test/
+          packer validate \
+            -var "image_version=${IMAGE_VERSION}" \
+            ubuntu-packer-test
 
 
 
