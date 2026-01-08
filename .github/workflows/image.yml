@@ -36,8 +36,13 @@ jobs:
 
       - name: Packer Init
         run: packer init ubuntu-packer-test/ 
-        
 
+      - name: Packer Build
+        run: |
+          packer build \
+            -var "image_version=${IMAGE_VERSION}" \
+            ubuntu-packer-test/ 
+            
       - name: Packer Validate
         run: |
           packer validate \
