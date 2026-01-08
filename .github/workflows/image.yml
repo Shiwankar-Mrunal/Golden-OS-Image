@@ -35,14 +35,11 @@ jobs:
       - name: Packer Init
         run: packer init ubuntu-packer-test/
 
-      # - name: Packer Validate
-      #   env:
-      #     ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      #     ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      #     ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      #     ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-      #   run: |
-      #     packer validate ubuntu-packer-test
+      - name: Packer Validate
+    
+        run: |
+          packer validate -var "image_version=1.2.9" ubuntu-packer-test/
+
 
 
 
