@@ -35,7 +35,8 @@ jobs:
           sudo apt install -y ansible
 
       - name: Packer Init
-        run: packer init packer/
+        run: packer init ubuntu-packer-test/ 
+        
 
       - name: Packer Validate
         run: |
