@@ -2,7 +2,7 @@ name: Golden Image Pipeline (Packer + Ansible - Azure)
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, pipeline ]
   pull_request:
 
 env:
