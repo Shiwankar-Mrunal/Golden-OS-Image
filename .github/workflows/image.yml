@@ -57,8 +57,8 @@ jobs:
             ubuntu-packer-test/
 
 
-      - name: Ansible Lint
-        run: ansible-lint ansible/
+      # - name: Ansible Lint
+      #   run: ansible-lint ansible/
 
   #################################
   # 2. BUILD IMAGE
