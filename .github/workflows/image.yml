@@ -48,7 +48,7 @@ jobs:
             -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
             -var "location=${AZURE_LOCATION}" \
             -var "image_version=${IMAGE_VERSION}" \
-            ubuntu-packer-test/
+            ubuntu-packer-test/image.pkr.hcl
 
       - name: Ansible Lint
         run: ansible-lint ansible/
