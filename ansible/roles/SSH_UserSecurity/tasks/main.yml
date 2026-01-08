@@ -1,0 +1,42 @@
+  - name: Disable root SSH login
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^PermitRootLogin' # regular expression
+      line: 'PermitRootLogin no'
+      state: present
+    notify: Restart SSH
+      
+  - name: Enforce key-based authentication
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^PasswordAuthentication'
+      line: 'PasswordAuthentication no'
+      state: present
+    notify: Restart SSH 
+
+  - name: Set SSH idle timeout
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^ClientAliveInterval'
+      line: "ClientAliveInterval {{ ssh_idle_timeout }}"
+      state: present
+    notify: Restart SSH
+
+  - name: Configure sudo logging
+    lineinfile:
+      path: /etc/sudoers
+      regexp: '^Defaults\s+logfile='
+      line: 'Defaults logfile="/var/log/sudo.log"'
+      validate: '/usr/sbin/visudo -cf %s'
+
+  - name: Validate SSH hardening - check root login disabled
+    command: sshd -T
+    register: sshd_config
+    changed_when: false
+
+  - name: Assert root login is disabled
+    assert:
+      that:
+        - "'permitrootlogin no' in sshd_config.stdout"
+      fail_msg: "Root SSH login is NOT disabled"
+      success_msg: "Root SSH login is disabled"

@@ -1,0 +1,6 @@
+---
+# handlers file for SystemPerformanceTuning
+# handlers:
+- name: Reload limits
+  shell: sysctl -p
+  become: yes
