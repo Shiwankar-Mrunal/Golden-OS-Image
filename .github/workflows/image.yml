@@ -33,3 +33,17 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y ansible
+
+      - name: Packer Init
+        run: packer init packer/
+
+      - name: Packer Validate
+        run: |
+          packer validate \
+            -var "image_version=${IMAGE_VERSION}" \
+            packer/templates/${CLOUD_PROVIDER}/${OS_NAME}.pkr.hcl
+
+      - name: Ansible Lint
+        run: |
+          pip install ansible-lint
+          ansible-lint ansible/playbook.yml
