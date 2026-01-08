@@ -1,15 +1,16 @@
-name: Golden Image Pipeline (Packer + Ansible)
+name: Golden Image Pipeline (Packer + Ansible - Azure)
 
 on:
   push:
-    branches: [ main, pipeline ]
+    branches: [ main, develop ]
   pull_request:
 
 env:
   PACKER_VERSION: "1.9.2"
   IMAGE_VERSION: "1.2.${{ github.run_number }}"
-  CLOUD_PROVIDER: "aws"
+  CLOUD_PROVIDER: "azure"
   OS_NAME: "ubuntu-22.04"
+  AZURE_LOCATION: "eastus"
   ANSIBLE_FORCE_COLOR: "true"
 
 jobs:
@@ -32,24 +33,18 @@ jobs:
       - name: Install Ansible
         run: |
           sudo apt update
-          sudo apt install -y ansible
+          sudo apt install -y ansible python3-pip
 
       - name: Packer Init
-        run: packer init ubuntu-packer-test/ 
+        run: packer init ubuntu-packer-test/
 
-      - name: Packer Build
-        run: |
-          packer build \
-            -var "image_version=${IMAGE_VERSION}" \
-            ubuntu-packer-test/ 
-            
       - name: Packer Validate
         run: |
           packer validate \
             -var "image_version=${IMAGE_VERSION}" \
-            packer/templates/${CLOUD_PROVIDER}/${OS_NAME}.pkr.hcl
+            ubuntu-packer-test/
 
       - name: Ansible Lint
         run: |
           pip install ansible-lint
-          ansible-lint ansible/playbook.yml
+          ansible-lint ansible/
