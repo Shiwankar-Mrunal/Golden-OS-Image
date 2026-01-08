@@ -43,19 +43,18 @@ jobs:
       - name: Packer Init
         run: packer init ubuntu-packer-test/
 
-      - name: Create Packer Variables File
-        run: |
-          cat <<EOF > packer_vars.pkr.hcl
-          client_id = "${{ secrets.AZURE_CLIENT_ID }}"
-          client_secret = "${{ secrets.AZURE_SECRET }}"
-          tenant_id = "${{ secrets.AZURE_TENANT }}"
-          subscription_id = "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
-          location = "${AZURE_LOCATION}"
-          image_version = "${IMAGE_VERSION}"
-          EOF
+      
 
       - name: Packer Validate
-        run: packer validate ubuntu-packer-test/image.pkr.hcl
+        run: |
+          packer validate \
+            -var "client_id=${{ secrets.AZURE_CLIENT_ID }}" \
+            -var "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
+            -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
+            -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+            -var "location=${AZURE_LOCATION}" \
+            -var "image_version=${IMAGE_VERSION}" \
+            ubuntu-packer-test/
 
 
       - name: Ansible Lint
