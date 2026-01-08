@@ -55,7 +55,7 @@ jobs:
           EOF
 
       - name: Packer Validate
-        run: packer validate -var-file=packer_vars.pkr.hcl ubuntu-packer-test/image.pkr.hcl
+        run: packer validate ubuntu-packer-test/image.pkr.hcl
 
 
       - name: Ansible Lint
