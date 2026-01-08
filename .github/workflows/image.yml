@@ -40,9 +40,7 @@ jobs:
 
       - name: Packer Validate
         run: |
-          packer validate \
-            -var "image_version=${IMAGE_VERSION}" \
-            ubuntu-packer-test/
+          packer validate ubuntu-packer-test/
 
 
 
