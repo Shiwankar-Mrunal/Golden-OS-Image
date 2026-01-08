@@ -42,9 +42,7 @@ jobs:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         run: |
-          packer validate \
-            -var "image_version=${IMAGE_VERSION}" \
-            ubuntu-packer-test
+          packer validate ubuntu-packer-test
 
 
 
