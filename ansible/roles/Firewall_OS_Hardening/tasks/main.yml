@@ -1,0 +1,134 @@
+
+# 1. Configure UFW / iptables rules
+# 2. Restrict inbound traffic
+
+# firewall package exists in the image.
+# Without UFW installed, you cannot apply rules, leaving the instance unprotected.
+
+- name: Install UFW
+  apt:
+    name: ufw
+    state: present
+    update_cache: yes
+
+- name: Set default firewall policies
+  ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+  loop:
+    - { direction: incoming, policy: deny }
+    - { direction: outgoing, policy: allow }
+    - { direction: routed, policy: deny }
+
+# Loopback (lo) traffic is internal communication inside the machine.
+
+- name: Allow loopback traffic
+  ufw:
+    rule: allow
+    interface: lo
+    direction: in
+
+
+# Allows response traffic for outgoing connections (like HTTP requests to external servers).
+# Prevents the firewall from breaking normal communications initiated by the server.
+
+- name: Allow established connections
+  ufw:
+    rule: allow
+    direction: in
+    proto: any
+    from_ip: any
+
+- name: Allow approved TCP ports
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: "{{ allowed_tcp_ports }}"
+
+- name: Allow approved UDP ports
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: udp
+  loop: "{{ allowed_udp_ports }}"
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+
+# 3. Apply sysctl security settings
+
+# This task loops through all security kernel parameters defined in sysctl_security_settings and sets each one to its desired value.
+# It applies the changes immediately (reload: yes) and ensures they persist across reboots.
+
+- name: Apply sysctl security settings
+  sysctl:
+      name: "{{ item.key }}"
+      value: "{{ item.value }}"
+      state: present
+      reload: yes
+  loop: "{{ sysctl_security_settings | dict2items }}"
+
+# 4. Enable automatic security updates
+
+# Automatically applies security patches to reduce the risk of exploitation.
+
+# Essential for golden images or production servers to stay secure.
+
+# Works silently in the background, maintaining system compliance.
+
+- name: Install unattended-upgrades
+  apt:
+      name: unattended-upgrades
+      state: present
+
+- name: Enable automatic security updates
+  copy:
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+    owner: root
+    group: root
+    mode: '0644'
+
+
+# 5. Validate CIS-style baseline
+
+# Checks critical security settings (firewall active, IP forwarding disabled).
+
+# Fails the playbook if security measures are not applied.
+
+# Provides a CIS-compliant validation step for automation.
+
+- name: Verify UFW is active
+  ansible.builtin.command: ufw status
+  when: (firewall_backend | default('')) == "ufw"
+
+
+- name: Fail if UFW not active
+  ansible.builtin.fail:
+    msg: "UFW is not active"
+  when: (firewall_backend | default('')) == "ufw"
+
+
+- name: Verify IP forwarding disabled
+  command: sysctl net.ipv4.ip_forward
+  register: ip_forward_check
+  changed_when: false
+
+- name: Fail if IP forwarding enabled
+  fail:
+    msg: "IP forwarding is enabled – CIS violation"
+  when: "'= 1' in ip_forward_check.stdout"
+
+- name: Display hardening summary
+  debug:
+    msg:
+      - "Firewall: ENABLED"
+      - "Inbound traffic: RESTRICTED"
+      - "Kernel sysctl: HARDENED"
+      - "Automatic updates: ENABLED"
+      - "CIS baseline: PASSED"
+

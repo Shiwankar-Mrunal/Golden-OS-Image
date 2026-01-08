@@ -1,0 +1,12 @@
+---
+# vars file for System_Configuration
+hostname : "golden-os"
+timezone : "UTC"
+ssh_banner : "/etc/ssh/ssh_banner"
+users :
+  - name: "adminuser"
+    comment: "Administrator User"
+    groups: "sudo"
+    shell: "/bin/bash"
+    password: "{{ 'xcdf@345sdfhdf#45' | password_hash('sha512') }}"
+     
