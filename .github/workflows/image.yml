@@ -39,17 +39,9 @@ jobs:
         run: packer init ubuntu-packer-test/
 
       - name: Packer Validate
-        env:
-          IMAGE_VERSION: ${{ env.IMAGE_VERSION }}
-          AZURE_LOCATION: eastus
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         run: |
           packer validate \
             -var "image_version=${IMAGE_VERSION}" \
-            -var "azure_location=${AZURE_LOCATION}" \
             ubuntu-packer-test/
 
 
