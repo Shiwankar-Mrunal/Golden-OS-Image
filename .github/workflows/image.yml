@@ -5,23 +5,9 @@ on:
     branches:
       - pipeline
 
-#env:
-  # PACKER_VERSION: "1.9.2"
-  # IMAGE_VERSION: "1.0.${{ github.run_number }}"
-  #CLOUD_PROVIDER: "azure"
-  #OS_NAME: "ubuntu-20.04"
-  #AZURE_LOCATION: "West Europe"
-  #ANSIBLE_FORCE_COLOR: "true"
-  # AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  # AZURE_SECRET: ${{ secrets.AZURE_SECRET }}
-  # AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
-  # AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
 permissions:
   id-token: write
-  contents: read
-        
-
+  contents: read        
 
 jobs:
   packer-build:
@@ -33,17 +19,13 @@ jobs:
 
       # -------------------
       # Setup Packer
-      # -------------------
-      
+      # -------------------     
 
       - name: Authenticate with Azure
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-
-          
-
+        
       # -------------------
       # Packer Init
       # -------------------
@@ -58,32 +40,6 @@ jobs:
         run: packer validate ubuntu-packer-test
 
       
-
-
-
       - name: Build image with Packer
         run: |
           packer build ubuntu-packer-test
-
-
-
-      # -------------------
-      # Packer Build
-      # -------------------
-      # - name: Packer Build Azure Image
-      #   run: |
-      #     packer build \
-      #       -var "client_id=${AZURE_CLIENT_ID}" \
-      #       -var "client_secret=${AZURE_SECRET}" \
-      #       -var "tenant_id=${AZURE_TENANT}" \
-      #       -var "subscription_id=${AZURE_SUBSCRIPTION_ID}" \
-      #       -var "resource_group_name=M-ResourceGroup" \
-      #       -var "location=${AZURE_LOCATION}" \
-      #       -var "vm_size=Standard_B2s" \
-      #       -var "image_version=${IMAGE_VERSION}" \
-      #     ubuntu-packer-test/
-
-# 
-    
-      
-

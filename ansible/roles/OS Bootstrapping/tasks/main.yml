@@ -28,13 +28,6 @@
         state: started
         enabled: true
 
-    # - name: Disable unused services
-    #   ansible.builtin.service:
-    #     name: "{{ item }}"
-    #     state: stopped
-    #     enabled: false
-    #   loop: "{{ unused_services }}"
-    #   when: item in ansible_facts.services
 
     # Gather service facts (REQUIRED)
     - name: Gather service facts
