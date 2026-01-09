@@ -45,3 +45,5 @@
     - name: Display verification results
       ansible.builtin.debug:
         var: verification.stdout_lines
+
+        
