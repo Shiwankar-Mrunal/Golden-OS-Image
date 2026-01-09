@@ -41,7 +41,7 @@
         comment: "{{ item.comment }}"
         groups: "{{ item.groups }}"
         shell: "{{ item.shell }}"
-        password: "{{ item.password }}"
+        password: "{{ item.password | password_hash('sha512')}}"
         create_home: yes
       loop: "{{ users }}"
 
