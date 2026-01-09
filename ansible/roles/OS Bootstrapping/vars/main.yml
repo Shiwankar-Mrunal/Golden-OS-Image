@@ -1,5 +1,4 @@
 ---
 # vars file for base-system
 item:
-  - apache2
-  - bluetooth
+  - nginx
