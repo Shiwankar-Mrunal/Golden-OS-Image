@@ -50,13 +50,14 @@ jobs:
       - name: Install Packer
         uses: hashicorp/setup-packer@v3
 
+      - name: Packer Init
+        run: |
+          packer init ubuntu-packer-test
         
       - name: Validate Packer Configuration
         run: packer validate ubuntu-packer-test
 
-      - name: Packer Init
-        run: |
-          packer init ubuntu-packer-test
+      
 
 
 
