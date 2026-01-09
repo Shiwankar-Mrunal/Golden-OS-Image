@@ -1,6 +1,5 @@
 ---
 # vars file for base-system
 item:
-  - curl
-  - wget
-  - unzip
+  - apache2
+  - bluetooth
