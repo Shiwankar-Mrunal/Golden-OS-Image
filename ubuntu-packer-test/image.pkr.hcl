@@ -4,11 +4,13 @@ packer {
   required_plugins {
     azure = {
       source  = "github.com/hashicorp/azure"
-      version = "~> 2"
+      version = "~> 2.0"
     }
+  }
+  required_plugins{
     ansible = {
       source  = "github.com/hashicorp/ansible"
-      version = "~> 1"
+      version = "~> 1.0"
     }
 
   }
