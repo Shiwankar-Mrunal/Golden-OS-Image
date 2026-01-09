@@ -100,12 +100,15 @@ jobs:
       - name: Packer Build Azure Image
         run: |
           packer build \
-            -var "client_id=${{ secrets.AZURE_CLIENT_ID }}" \
-            -var "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
-            -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
-            -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+            -var "client_id=${AZURE_CLIENT_ID}" \
+            -var "client_secret=${AZURE_SECRET}" \
+            -var "tenant_id=${AZURE_TENANT}" \
+            -var "subscription_id=${AZURE_SUBSCRIPTION_ID}" \
             -var "resource_group_name=M-ResourceGroup" \
             -var "location=${AZURE_LOCATION}" \
             -var "vm_size=Standard_B2s" \
             -var "image_version=${IMAGE_VERSION}" \
             ubuntu-packer-test/
+
+      
+
