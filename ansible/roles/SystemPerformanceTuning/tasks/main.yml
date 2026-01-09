@@ -22,17 +22,8 @@
     reload: yes
   loop: "{{ sysctl_params | dict2items }}"
 
-  # 3. Disable unnecessary services
 
-# - name: "Disable unnecessary services"
-#   service:
-#     name: "{{ item }}"
-#     enabled: no
-#     state: stopped
-#   loop: "{{ disable_services }}"
-#   ignore_errors: yes
-
-# 4. Optimize boot time
+# 3. Optimize boot time
 
 - name: "Optimize boot time – mask unwanted services"
   systemd:
@@ -40,10 +31,9 @@
     masked: yes
   loop: "{{ disable_services }}"
 
-# 5. Validate system resource usage
+# 4. Validate system resource usage
 
 - name: "Validate system resource usage – file descriptors"
   shell: "ulimit -n"
   register: ulimit_output
 
-  
