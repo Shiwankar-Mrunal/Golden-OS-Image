@@ -56,7 +56,7 @@ build {
     user          = "azureuser"
 
     extra_arguments = [
-    "-e", "ansible_python_interpreter=/usr/bin/python3"
+    "-e", "ansible_python_interpreter=/usr/bin/python3.10"
   ]
 
   }
