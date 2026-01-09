@@ -33,8 +33,10 @@
         name: "{{ item }}"
         state: stopped
         enabled: false
-      loop: "{{ unused_services }}"
+      # loop: "{{ unused_services }}"
       ignore_errors: yes
+      
+  
 
     - name: Verify package installation
       ansible.builtin.shell: |
