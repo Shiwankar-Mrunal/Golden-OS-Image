@@ -39,8 +39,8 @@ source "azure-arm" "ubuntu" {
   location = var.location
   vm_size = var.vm_size
 
-  ssh_username = "azureuser"
-  ssh_timeout  = "30m"
+  # ssh_username = "azureuser"
+  # ssh_timeout  = "30m"
 
   temp_resource_group_name = "${var.resource_group_name}-temp-rg"
 }
@@ -55,9 +55,9 @@ build {
     playbook_file = "ansible/playbook.yml"
     user          = "azureuser"
 
-    extra_arguments = [
-    "-e", "ansible_python_interpreter=/usr/bin/python3.10"
-  ]
+  #   extra_arguments = [
+  #   "-e", "ansible_python_interpreter=/usr/bin/python3"
+  # ]
 
   }
 }
