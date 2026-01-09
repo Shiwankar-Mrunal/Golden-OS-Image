@@ -1,6 +1,6 @@
 ---
 # vars file for base-system
-items:
+item:
   - curl
   - wget
   - unzip
