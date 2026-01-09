@@ -1,84 +1,44 @@
-name: Azure Golden Image Pipeline (Packer + Ansible)
+name: Azure Packer Image Build
 
 on:
   push:
-    branches: [ main, pipeline]
-  pull_request:
+    branches:
+      - pipeline
+  workflow_dispatch:
 
 env:
-  PACKER_VERSION: "1.9.2"
-  IMAGE_VERSION: "1.0.${{ github.run_number }}"
-  CLOUD_PROVIDER: "azure"
-  OS_NAME: "ubuntu-20.04"
-  AZURE_LOCATION: "West Europe"
-  ANSIBLE_FORCE_COLOR: "true"
-  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  AZURE_SECRET: ${{ secrets.AZURE_SECRET }}
-  AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
-  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  PACKER_LOG: 1
 
 jobs:
-
-  #################################
-  # 1. VALIDATION
-  #################################
-  validate:
+  packer-build:
     runs-on: ubuntu-latest
-    name: Validate Packer + Ansible
 
     steps:
-      - uses: actions/checkout@v4
+      # -------------------
+      # Checkout code
+      # -------------------
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Install Packer
+      # -------------------
+      # Install Packer
+      # -------------------
+      - name: Setup Packer
         uses: hashicorp/setup-packer@v3
         with:
-          version: ${{ env.PACKER_VERSION }}
+          version: "1.10.0"
 
+      # -------------------
+      # Install Ansible
+      # -------------------
       - name: Install Ansible
         run: |
           sudo apt update
-          sudo apt install -y ansible python3-pip
-          pip install ansible-lint
+          sudo apt install -y ansible
 
-      - name: Packer Init
-        run: packer init ubuntu-packer-test/
-
-      
-
-      - name: Packer Validate
-        run: |
-          packer validate \
-            -var "client_id=${{ secrets.AZURE_CLIENT_ID }}" \
-            -var "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
-            -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
-            -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
-            -var "location=${AZURE_LOCATION}" \
-            -var "image_version=${IMAGE_VERSION}" \
-            ubuntu-packer-test/
-
-
-      # - name: Ansible Lint
-      #   run: ansible-lint ansible/
-
-  #################################
-  # 2. BUILD IMAGE
-  #################################
-  build:
-    runs-on: ubuntu-latest
-    name: Build Azure Image
-    needs: validate
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Packer
-        uses: hashicorp/setup-packer@v3
-        with:
-          version: ${{ env.PACKER_VERSION }}
-
-      - name: Install Ansible
-        run: sudo apt install -y ansible python3-pip
-
+      # -------------------
+      # Azure Login
+      # -------------------
       - name: Azure Login
         uses: azure/login@v2
         with:
@@ -87,80 +47,33 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
 
-      - name: Build Image with Packer + Ansible
+      # -------------------
+      # Packer Init
+      # -------------------
+      - name: Packer Init
+        run: |
+          packer init .
+
+      # -------------------
+      # Packer Validate
+      # -------------------
+      - name: Packer Validate
+        run: |
+          packer validate \
+            -var "client_id=${{ secrets.AZURE_CLIENT_ID }}" \
+            -var "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
+            -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
+            -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+            .
+
+      # -------------------
+      # Packer Build
+      # -------------------
+      - name: Packer Build Azure Image
         run: |
           packer build \
             -var "client_id=${{ secrets.AZURE_CLIENT_ID }}" \
             -var "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
             -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
             -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
-            -var "resource_group_name=M-ResourceGroup" \
-            -var "location=${AZURE_LOCATION}" \
-            -var "vm_size=Standard_B2s" \
-            -var "image_version=${IMAGE_VERSION}" \
-            ubuntu-packer-test/
-
-  #################################
-  # 3. TEST IMAGE
-  #################################
-  test:
-    runs-on: ubuntu-latest
-    name: Test Image
-    needs: build
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install InSpec
-        run: |
-          curl https://omnitruck.chef.io/install.sh | sudo bash
-
-      - name: Run InSpec Tests
-        run: inspec exec tests/inspec
-
-      - name: Run Goss Tests
-        run: |
-          curl -fsSL https://goss.rocks/install | sudo sh
-          goss -g tests/goss/goss.yaml validate
-
-  #################################
-  # 4. RELEASE & VERSIONING
-  #################################
-  release:
-    runs-on: ubuntu-latest
-    name: Release Image
-    needs: test
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Create Version Folder
-        run: mkdir -p versions/v${IMAGE_VERSION}
-
-      - name: Create Manifest
-        run: |
-          cat <<EOF > versions/v${IMAGE_VERSION}/manifest.json
-          {
-            "version": "${IMAGE_VERSION}",
-            "cloud": "azure",
-            "os": "${OS_NAME}",
-            "packer": "${PACKER_VERSION}",
-            "location": "${AZURE_LOCATION}",
-            "git_commit": "${GITHUB_SHA}",
-            "date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          }
-          EOF
-
-      - name: Update Latest Pointer
-        run: |
-          rm -f versions/latest
-          ln -s v${IMAGE_VERSION} versions/latest
-
-      - name: Commit Release
-        run: |
-          git config user.name "ci-bot"
-          git config user.email "ci@company.com"
-          git add versions/
-          git commit -m "Release Azure image ${IMAGE_VERSION}"
-          git push
+            .
