@@ -54,5 +54,10 @@ build {
   provisioner "ansible" {
     playbook_file = "ansible/playbook.yml"
     user          = "azureuser"
+
+    extra_arguments = [
+    "-e", "ansible_python_interpreter=/usr/bin/python3"
+  ]
+
   }
 }
