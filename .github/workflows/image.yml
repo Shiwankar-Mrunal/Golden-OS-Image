@@ -64,7 +64,8 @@ jobs:
       - name: Build image with Packer
         run: |
           packer build ubuntu-packer-test
-    
+
+
 
       # -------------------
       # Packer Build
