@@ -2,7 +2,8 @@
       ansible.builtin.apt:
         update_cache: yes
         upgrade: dist
-      when: ansible_os_family == "Debian"
+      when: ansible_os_family is defined and ansible_os_family == "Debian"
+
 
     - name: Install base utilities
       ansible.builtin.apt:
@@ -11,7 +12,8 @@
           - wget
           - unzip
         state: present
-      when: ansible_os_family == "Debian"
+      when: ansible_os_family is defined and ansible_os_family == "Debian"
+
 
     - name: Install chrony for time sync
       ansible.builtin.apt:
