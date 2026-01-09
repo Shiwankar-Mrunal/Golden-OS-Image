@@ -35,15 +35,18 @@
         state: restarted
 
     #  Configure user accounts and sudo
-    # - name: Ensure users exist
-    #   ansible.builtin.user:
-    #     name: "{{ item.name }}"
-    #     comment: "{{ item.comment }}"
-    #     groups: "{{ item.groups }}"
-    #     shell: "{{ item.shell }}"
-    #     password: "{{ item.password | password_hash('sha512')}}"
-    #     create_home: yes
-    #   loop: "{{ users }}"
+    - name: Ensure users exist
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        comment: "{{ item.comment }}"
+        groups: "{{ item.groups }}"
+        shell: "{{ item.shell }}"
+        # password: "{{ item.password | password_hash('sha512')}}"
+        password: "{{ item.password }}"
+        create_home: yes
+      loop: "{{ users }}"
+
+    # ________________________________________________________________________
 
     - name: Ensure sudoers for user without password
       ansible.builtin.copy:
