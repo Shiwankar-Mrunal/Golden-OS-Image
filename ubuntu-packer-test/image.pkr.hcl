@@ -59,21 +59,7 @@ build {
   #   "-e", "ansible_python_interpreter=/usr/bin/python3"
   # ]
 
-  post-processor "azure-arm" {
-    type = "azure-arm"
-
-    # Compute Gallery configuration
-    gallery_name               = "GoldenOSGallery"
-    image_definition_name      = "var.image_sku" 
-    image_version              = "var.image_version" 
-    resource_group_name        = "M-ResourceGroup"
-    location                   = "West Europe"
-    target_regions {
-      name          = "West Europe"
-      replica_count = 1
-      storage_account_type = "Standard_LRS"
-    }
-  }
+  
 
   }
 }
