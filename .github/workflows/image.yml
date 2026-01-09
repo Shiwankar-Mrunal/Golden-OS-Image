@@ -6,16 +6,16 @@ on:
       - pipeline
 
 env:
-  PACKER_VERSION: "1.9.2"
-  IMAGE_VERSION: "1.0.${{ github.run_number }}"
-  CLOUD_PROVIDER: "azure"
-  OS_NAME: "ubuntu-20.04"
-  AZURE_LOCATION: "West Europe"
-  ANSIBLE_FORCE_COLOR: "true"
-  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  AZURE_SECRET: ${{ secrets.AZURE_SECRET }}
-  AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
-  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  # PACKER_VERSION: "1.9.2"
+  # IMAGE_VERSION: "1.0.${{ github.run_number }}"
+  #CLOUD_PROVIDER: "azure"
+  #OS_NAME: "ubuntu-20.04"
+  #AZURE_LOCATION: "West Europe"
+  #ANSIBLE_FORCE_COLOR: "true"
+  # AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  # AZURE_SECRET: ${{ secrets.AZURE_SECRET }}
+  # AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
+  # AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
 permissions:
   id-token: write
@@ -34,21 +34,12 @@ jobs:
       # -------------------
       # Setup Packer
       # -------------------
-      - name: Install Packer
-        uses: hashicorp/setup-packer@v3
-        with:
-          version: "1.9.0"
+      
 
       - name: Authenticate with Azure
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
-          creds: >
-            {
-              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
-              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
-              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
-              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
-            }
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
 
           
@@ -56,6 +47,14 @@ jobs:
       # -------------------
       # Packer Init
       # -------------------
+      - name: Install Packer
+        uses: hashicorp/setup-packer@v3
+        with:
+          version: "1.9.0"
+        
+      - name: Validate Packer Configuration
+        run: packer validate ubuntu-packer-test/
+
       - name: Packer Init
         run: |
           packer init ubuntu-packer-test/
@@ -64,13 +63,7 @@ jobs:
 
       - name: Build image with Packer
         run: |
-          packer init template.pkr.hcl
-          packer validate template.pkr.hcl
-          packer build -var "client_id=${{ secrets.AZURE_CLIENT_ID }}" \
-                       -var "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
-                       -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
-                       -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
-                       template.pkr.hcl
+          packer build -var-file=ubuntu-packer-test/variables.pkr.hcl ubuntu-packer-test/
     
 
       # -------------------
