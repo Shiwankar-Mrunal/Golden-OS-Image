@@ -7,6 +7,12 @@ on:
   workflow_dispatch:
 
 env:
+  PACKER_VERSION: "1.9.2"
+  IMAGE_VERSION: "1.0.${{ github.run_number }}"
+  CLOUD_PROVIDER: "azure"
+  OS_NAME: "ubuntu-20.04"
+  AZURE_LOCATION: "West Europe"
+  ANSIBLE_FORCE_COLOR: "true"
   AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   AZURE_SECRET: ${{ secrets.AZURE_SECRET }}
   AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
