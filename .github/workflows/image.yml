@@ -53,17 +53,17 @@ jobs:
           version: "1.9.0"
         
       - name: Validate Packer Configuration
-        run: packer validate ubuntu-packer-test/
+        run: packer validate ubuntu-packer-test
 
       - name: Packer Init
         run: |
-          packer init ubuntu-packer-test/
+          packer init ubuntu-packer-test
 
 
 
       - name: Build image with Packer
         run: |
-          packer build -var-file=ubuntu-packer-test/variables.pkr.hcl ubuntu-packer-test/
+          packer build -var-file=ubuntu-packer-test/variables.pkr.hcl ubuntu-packer-test
     
 
       # -------------------

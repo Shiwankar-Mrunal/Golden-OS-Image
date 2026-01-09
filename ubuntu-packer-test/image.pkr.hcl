@@ -24,7 +24,7 @@ source "azure-arm" "ubuntu" {
   # client_secret   = var.client_secret
   # tenant_id       = var.tenant_id
   # subscription_id = var.subscription_id
-
+  use_azure_cli_auth = true
   managed_image_resource_group_name = var.resource_group_name
   managed_image_name = "ubuntu-${var.image_sku}-${formatdate("DDMMMYYYY", timestamp())}"
 
