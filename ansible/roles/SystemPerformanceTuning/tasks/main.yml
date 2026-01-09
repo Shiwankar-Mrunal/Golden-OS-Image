@@ -24,13 +24,13 @@
 
   # 3. Disable unnecessary services
 
-- name: "Disable unnecessary services"
-  service:
-    name: "{{ item }}"
-    enabled: no
-    state: stopped
-  loop: "{{ disable_services }}"
-  ignore_errors: yes
+# - name: "Disable unnecessary services"
+#   service:
+#     name: "{{ item }}"
+#     enabled: no
+#     state: stopped
+#   loop: "{{ disable_services }}"
+#   ignore_errors: yes
 
 # 4. Optimize boot time
 
