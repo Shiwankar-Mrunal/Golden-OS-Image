@@ -50,7 +50,7 @@ build {
   sources = ["source.azure-arm.ubuntu"]
 
   provisioner "ansible" {
-    playbook_file = "../ansible/playbook.yml"
+    playbook_file = "ansible/playbook.yml"
     user          = "azureuser"
   }
 }
