@@ -94,4 +94,8 @@ jobs:
             -var "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
             -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
             -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
-            .
+            -var "resource_group_name=M-ResourceGroup" \
+            -var "location=${AZURE_LOCATION}" \
+            -var "vm_size=Standard_B2s" \
+            -var "image_version=${IMAGE_VERSION}" \
+            ubuntu-packer-test/
