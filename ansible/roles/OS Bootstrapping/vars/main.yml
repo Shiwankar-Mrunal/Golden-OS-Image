@@ -1,4 +1,6 @@
 ---
 # vars file for base-system
 item:
-  - nginx
+ 
+ 
+ - nginx
