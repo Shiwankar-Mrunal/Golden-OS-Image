@@ -63,7 +63,7 @@ jobs:
 
       - name: Build image with Packer
         run: |
-          packer build -var-file=ubuntu-packer-test/variables.pkr.hcl ubuntu-packer-test
+          packer build ubuntu-packer-test
     
 
       # -------------------
