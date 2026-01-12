@@ -15,7 +15,7 @@
       when: ansible_os_family is defined and ansible_os_family == "Debian"
 
 
-    - name: Install chrony for time sync
+    - name: Install NTP client for time synchronization
       ansible.builtin.apt:
         name: chrony
         state: present
