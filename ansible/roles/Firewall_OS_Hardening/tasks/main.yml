@@ -59,8 +59,6 @@
 
 # 3. Apply sysctl security settings
 
-# This task loops through all security kernel parameters defined in sysctl_security_settings and sets each one to its desired value.
-# It applies the changes immediately (reload: yes) and ensures they persist across reboots.
 
 - name: Apply sysctl security settings
   sysctl:
@@ -72,11 +70,6 @@
 
 # 4. Enable automatic security updates
 
-# Automatically applies security patches to reduce the risk of exploitation.
-
-# Essential for golden images or production servers to stay secure.
-
-# Works silently in the background, maintaining system compliance.
 
 - name: Install unattended-upgrades
   apt:
@@ -96,11 +89,6 @@
 
 # 5. Validate CIS-style baseline
 
-# Checks critical security settings (firewall active, IP forwarding disabled).
-
-# Fails the playbook if security measures are not applied.
-
-# Provides a CIS-compliant validation step for automation.
 
 - name: Verify UFW is active
   ansible.builtin.command: ufw status

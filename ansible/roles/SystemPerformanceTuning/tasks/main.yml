@@ -8,7 +8,7 @@
       * hard nofile {{ nofile_hard_limit }}
   notify: Reload limits
 
-  # 2. Tune kernel parameters (sysctl)
+
   # optimize memory, networking, and other kernel-level settings to improve efficiency and reliability.
 - name: "Tune kernel parameters using sysctl"
   sysctl:
