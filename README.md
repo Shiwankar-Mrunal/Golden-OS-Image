@@ -187,5 +187,3 @@ Task 4 : Validate system resource usage
 1. lint in pipeline
 2. Security Scanning
 3. Store image
-
-#
