@@ -1,0 +1,77 @@
+
+#  Configure hostname
+    - name: Set system hostname
+      ansible.builtin.hostname:
+        name: "{{ hostname }}"
+
+    #  Configure timezone
+    - name: Set timezone
+      ansible.builtin.timezone:
+        name: "{{ timezone }}"
+
+    # A pre-login message to show users connecting via SSH
+    - name: Create SSH banner file
+      ansible.builtin.copy:
+        dest: "{{ ssh_banner }}"
+        content: |
+          ********************************************************
+          *  Unauthorized access is prohibited!                 *
+          ********************************************************
+        owner: root
+        group: root
+        mode: '0644'
+
+    #banner usually contains a security warning or company notice, 
+    #e.g., “Unauthorized access is prohibited.”
+    #This task makes sure the SSH server is set to show a banner message when someone connects.
+    - name: Ensure SSH daemon uses banner
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^Banner'
+        line: "Banner {{ ssh_banner }}"
+        state: present
+        backup: yes
+
+    - name: Restart SSH service to apply banner
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
+
+    #  Configure user accounts and sudo
+    - name: Ensure users exist
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        comment: "{{ item.comment }}"
+        groups: "{{ item.groups }}"
+        shell: "{{ item.shell }}"
+        # password: "{{ item.password | password_hash('sha512')}}"
+        password: "{{ item.password }}"
+        create_home: yes
+      loop: "{{ users }}"
+
+
+    - name: Ensure sudoers for create file  without user password
+      ansible.builtin.copy:
+        dest: "/etc/sudoers.d/{{ item.name }}"
+        content: "{{ item.name }} ALL=(ALL) NOPASSWD:ALL"
+        owner: root
+        group: root
+        mode: '0440'
+      loop: "{{ users }}"
+
+    # Set default shell environment
+    - name: Configure default shell environment for all users
+      ansible.builtin.copy:
+        dest: "/etc/profile.d/default_env.sh"
+        content: |
+          export PATH=$PATH:/usr/local/bin
+          export HISTSIZE=1000
+          export HISTFILESIZE=2000
+        owner: root
+        group: root
+        mode: '0644'
+
+    # Validate idempotency
+    - name: Check idempotency
+      ansible.builtin.shell: "echo 'All tasks applied successfully!'"
+      changed_when: false

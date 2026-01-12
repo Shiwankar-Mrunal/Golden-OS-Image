@@ -1,0 +1,17 @@
+---
+# vars file for SystemPerformanceTuning
+nofile_soft_limit: 65536
+nofile_hard_limit: 65536  
+sysctl_params:
+  net.ipv4.tcp_fin_timeout: 15
+  net.ipv4.tcp_tw_reuse: 1
+  vm.swappiness: 10
+
+disable_services:
+  - bluetooth
+  - avahi-daemon
+  - cups
+
+item : disable_services 
+    - apache2 
+  

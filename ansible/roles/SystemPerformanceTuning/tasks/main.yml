@@ -1,0 +1,35 @@
+# 1.Configure file descriptor limits
+# Open large no of files simultaneously by increasing file descriptor limits.
+- name: "Configure file descriptor limits"
+  copy:
+    dest: /etc/security/limits.d/custom-limits.conf
+    content: |
+      * soft nofile {{ nofile_soft_limit }}
+      * hard nofile {{ nofile_hard_limit }}
+  notify: Reload limits
+
+
+  # optimize memory, networking, and other kernel-level settings to improve efficiency and reliability.
+- name: "Tune kernel parameters using sysctl"
+  sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: yes
+  loop: "{{ sysctl_params | dict2items }}"
+
+
+# 3. Optimize boot time
+
+- name: "Optimize boot time – mask unwanted services"
+  systemd:
+    name: "{{ item }}"
+    masked: yes
+  loop: "{{ disable_services }}"
+
+# 4. Validate system resource usage
+# Verify that file descriptor limits and other optimizations are active.
+- name: "Validate system resource usage – file descriptors"
+  shell: "ulimit -n"
+  register: ulimit_output
+
