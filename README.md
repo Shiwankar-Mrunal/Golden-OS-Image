@@ -186,6 +186,3 @@ Task 4 : Validate system resource usage
 ###  Future Scope 
 1. lint in pipeline
 2. Security Scanning
-3. Store image
-
-#
