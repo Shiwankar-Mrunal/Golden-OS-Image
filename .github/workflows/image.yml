@@ -3,7 +3,7 @@ name: Azure Packer Image Build
 on:
   push:
     branches:
-      - main
+      - test
 
 permissions:
   id-token: write
