@@ -9,7 +9,7 @@
       ansible.builtin.timezone:
         name: "{{ timezone }}"
 
-    # Configure SSH banner
+    # A pre-login message to show users connecting via SSH
     - name: Create SSH banner file
       ansible.builtin.copy:
         dest: "{{ ssh_banner }}"
@@ -21,6 +21,9 @@
         group: root
         mode: '0644'
 
+    #banner usually contains a security warning or company notice, 
+    #e.g., “Unauthorized access is prohibited.”
+    #This task makes sure the SSH server is set to show a banner message when someone connects.
     - name: Ensure SSH daemon uses banner
       ansible.builtin.lineinfile:
         path: /etc/ssh/sshd_config
@@ -41,11 +44,13 @@
         comment: "{{ item.comment }}"
         groups: "{{ item.groups }}"
         shell: "{{ item.shell }}"
+        # password: "{{ item.password | password_hash('sha512')}}"
         password: "{{ item.password }}"
         create_home: yes
       loop: "{{ users }}"
 
-    - name: Ensure sudoers for user without password
+
+    - name: Ensure sudoers for create file  without user password
       ansible.builtin.copy:
         dest: "/etc/sudoers.d/{{ item.name }}"
         content: "{{ item.name }} ALL=(ALL) NOPASSWD:ALL"

@@ -2,7 +2,8 @@
       ansible.builtin.apt:
         update_cache: yes
         upgrade: dist
-      when: ansible_os_family == "Debian"
+      when: ansible_os_family is defined and ansible_os_family == "Debian"
+
 
     - name: Install base utilities
       ansible.builtin.apt:
@@ -11,13 +12,15 @@
           - wget
           - unzip
         state: present
-      when: ansible_os_family == "Debian"
+      when: ansible_os_family is defined and ansible_os_family == "Debian"
 
-    - name: Install chrony for time sync
+
+    - name: Install NTP client for time synchronization
       ansible.builtin.apt:
         name: chrony
         state: present
-      when: ansible_os_family == "Debian"
+      when: ansible_os_family is defined and ansible_os_family == "Debian"
+
 
     - name: Enable and start chrony service
       ansible.builtin.service:
@@ -25,13 +28,20 @@
         state: started
         enabled: true
 
+
+    # Gather service facts (REQUIRED)
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    # Disable unused services safely
     - name: Disable unused services
       ansible.builtin.service:
         name: "{{ item }}"
         state: stopped
         enabled: false
       loop: "{{ unused_services }}"
-      ignore_errors: yes
+      when: item in ansible_facts.services
+
 
     - name: Verify package installation
       ansible.builtin.shell: |
@@ -42,3 +52,5 @@
     - name: Display verification results
       ansible.builtin.debug:
         var: verification.stdout_lines
+
+        

@@ -4,11 +4,13 @@ packer {
   required_plugins {
     azure = {
       source  = "github.com/hashicorp/azure"
-      version = "~> 2"
+      version = "~> 2.0"
     }
+  }
+  required_plugins{
     ansible = {
       source  = "github.com/hashicorp/ansible"
-      version = "~> 1"
+      version = "~> 1.0"
     }
 
   }
@@ -17,14 +19,10 @@ packer {
 
 
 # -------------------
-# Azure ARM builder
+# Source Block – Azure ARM Builder
 # -------------------
 source "azure-arm" "ubuntu" {
-  client_id       = var.client_id
-  client_secret   = var.client_secret
-  tenant_id       = var.tenant_id
-  subscription_id = var.subscription_id
-
+  use_azure_cli_auth = true
   managed_image_resource_group_name = var.resource_group_name
   managed_image_name = "ubuntu-${var.image_sku}-${formatdate("DDMMMYYYY", timestamp())}"
 
@@ -37,20 +35,19 @@ source "azure-arm" "ubuntu" {
   location = var.location
   vm_size = var.vm_size
 
-  ssh_username = "azureuser"
-  ssh_timeout  = "30m"
 
   temp_resource_group_name = "${var.resource_group_name}-temp-rg"
 }
 
 # -------------------
-# Build definition
+# Build Block – Build Definition
 # -------------------
 build {
   sources = ["source.azure-arm.ubuntu"]
 
   provisioner "ansible" {
-    playbook_file = "../ansible/playbook.yml"
+    playbook_file = "ansible/playbook.yml"
     user          = "azureuser"
+
   }
 }

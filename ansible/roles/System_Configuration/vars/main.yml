@@ -4,9 +4,10 @@ hostname : "golden-os"
 timezone : "UTC"
 ssh_banner : "/etc/ssh/ssh_banner"
 users :
-  - name: "adminuser"
-    comment: "Administrator User"
-    groups: "sudo"
-    shell: "/bin/bash"
-    password: "{{ 'xcdf@345sdfhdf#45' | password_hash('sha512') }}"
+  - name: adminuser
+    comment: Administrator User
+    groups: sudo
+    shell: /bin/bash
+    # password: "{{ 'xcdf@345sdfhdf#45' | password_hash('sha512') }}"
+    password: "$6$rounds=656000$abc123$ZpP1...$ZpP1..."
      

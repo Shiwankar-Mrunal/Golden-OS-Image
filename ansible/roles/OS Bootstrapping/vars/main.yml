@@ -1,2 +1,4 @@
 ---
 # vars file for base-system
+unused_services:
+  - apache2

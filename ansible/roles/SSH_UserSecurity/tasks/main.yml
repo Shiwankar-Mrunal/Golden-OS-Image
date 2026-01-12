@@ -29,11 +29,12 @@
       line: 'Defaults logfile="/var/log/sudo.log"'
       validate: '/usr/sbin/visudo -cf %s'
 
-  - name: Validate SSH hardening - check root login disabled
+  - name: Validate SSH hardening (Configuration)- check root login disabled
     command: sshd -T
     register: sshd_config
     changed_when: false
 
+#root login via SSH is disabled by asserting that 'permitrootlogin no' is present in the sshd configuration
   - name: Assert root login is disabled
     assert:
       that:

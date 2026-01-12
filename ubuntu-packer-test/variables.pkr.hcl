@@ -1,23 +1,3 @@
-// -------------------
-// Variables for Azure Ubuntu Packer Build
-// -------------------
-
-variable "client_id" {
-  type = string
-}
-
-variable "client_secret" {
-  type      = string
-  sensitive = true
-}
-
-variable "tenant_id" {
-  type = string
-}
-
-variable "subscription_id" {
-  type = string
-}
 
 variable "resource_group_name" {
   type    = string
@@ -34,19 +14,29 @@ variable "vm_size" {
   default = "Standard_B2s"
 }
 
+
+#Definition: The company or organization that 
+#provides the image in the Azure Marketplace.
+#Canonical → for Ubuntu
+
 variable "image_publisher" {
   type    = string
   default = "Canonical"
 }
 
+#Definition: The specific offer of the image
+#It tells Azure which “offer” under the publisher” you want to use. 
+#A publisher can have multiple offers
+
 variable "image_offer" {
   type    = string
-  default = "0001-com-ubuntu-server-focal"
+  default = "0001-com-ubuntu-server-jammy"
 }
 
+#Definition: The specific version of the image  
 variable "image_sku" {
   type    = string
-  default = "20_04-lts"
+  default = "22_04-lts-gen2"
 }
 
 variable "image_version" {

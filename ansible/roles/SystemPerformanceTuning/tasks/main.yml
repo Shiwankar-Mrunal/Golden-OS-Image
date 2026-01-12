@@ -1,9 +1,5 @@
-# System performance tuning involves optimizing 
-# hardware and software configurations to enhance efficiency, 
-# responsiveness, and overall performance of computer systems.
-
 # 1.Configure file descriptor limits
-
+# Open large no of files simultaneously by increasing file descriptor limits.
 - name: "Configure file descriptor limits"
   copy:
     dest: /etc/security/limits.d/custom-limits.conf
@@ -13,7 +9,7 @@
   notify: Reload limits
 
   # 2. Tune kernel parameters (sysctl)
-
+  # optimize memory, networking, and other kernel-level settings to improve efficiency and reliability.
 - name: "Tune kernel parameters using sysctl"
   sysctl:
     name: "{{ item.key }}"
@@ -22,17 +18,8 @@
     reload: yes
   loop: "{{ sysctl_params | dict2items }}"
 
-  # 3. Disable unnecessary services
 
-- name: "Disable unnecessary services"
-  service:
-    name: "{{ item }}"
-    enabled: no
-    state: stopped
-  loop: "{{ disable_services }}"
-  ignore_errors: yes
-
-# 4. Optimize boot time
+# 3. Optimize boot time
 
 - name: "Optimize boot time – mask unwanted services"
   systemd:
@@ -40,8 +27,9 @@
     masked: yes
   loop: "{{ disable_services }}"
 
-# 5. Validate system resource usage
-
+# 4. Validate system resource usage
+# Verify that file descriptor limits and other optimizations are active.
 - name: "Validate system resource usage – file descriptors"
   shell: "ulimit -n"
   register: ulimit_output
+
